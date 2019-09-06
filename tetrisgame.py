@@ -4,6 +4,7 @@
 # So far, a tetris block will auto-generate which you can move. It will then sit on the bottom of the screen, and then auto-generate
 # a new block. You can move left or right with the arrow keys, and increase downward velocity with the down arrow.
 # ESCAPE quits.
+# Your movement speed may vary depending on platform, as it has not been yet been synced with any time delta/tick difference.
 #
 # TODO: Collision Detection, Active block Rotation, Line Clearing, Main Menu & Game Over screens
 # Possible fun bonuses: Allow player to vary speed & block size, introduce color variation & matching for bonus points
