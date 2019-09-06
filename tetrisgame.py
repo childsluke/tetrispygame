@@ -8,7 +8,6 @@
 #
 # TODO: Random Tetris block selection, Collision Detection, Active block Rotation, Line Clearing, Main Menu & Game Over screens
 # Possible fun bonuses: Allow player to vary speed & block size, introduce color variation & matching for bonus points
-# (there are some icky hard-coded bits of yuck in here - sorry! This is my first real Python project ever)
 
 import pygame
 
