@@ -6,7 +6,7 @@
 # ESCAPE quits.
 # Your movement speed may vary depending on platform, as it has not been yet been synced with any time delta/tick difference.
 #
-# TODO: Collision Detection, Active block Rotation, Line Clearing, Main Menu & Game Over screens
+# TODO: Random Tetris block selection, Collision Detection, Active block Rotation, Line Clearing, Main Menu & Game Over screens
 # Possible fun bonuses: Allow player to vary speed & block size, introduce color variation & matching for bonus points
 # (there are some icky hard-coded bits of yuck in here - sorry! This is my first real Python project ever)
 
