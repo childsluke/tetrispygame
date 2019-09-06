@@ -1,7 +1,9 @@
 # A TETRIS CLONE UTILIZING PYGAME WRITTEN AS A FIRST 'SIMPLE' GAME PROJECT BY LUKE CHILDS (STARTED 9/5/2019)
 #------------------------------------------------------------------------------------------------------------
 #
-#
+# So far, a tetris block will auto-generate which you can move. It will then sit on the bottom of the screen, and then auto-generate
+# a new block. You can move left or right with the arrow keys, and increase downward velocity with the down arrow.
+# ESCAPE quits.
 #
 # TODO: Collision Detection, Active block Rotation, Line Clearing, Main Menu & Game Over screens
 # Possible fun bonuses: Allow player to vary speed & block size, introduce color variation & matching for bonus points
