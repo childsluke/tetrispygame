@@ -9,6 +9,8 @@
 # TODO: Random Tetris block selection, Collision Detection, Active block Rotation, Line Clearing, Main Menu & Game Over screens
 # Possible fun bonuses: Allow player to vary speed & block size, introduce color variation & matching for bonus points
 
+#  COPYRIGHT 2019 - Luke Childs
+
 import pygame
 
 blockSize = 32
