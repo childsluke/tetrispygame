@@ -273,7 +273,7 @@ def main():
             activeBlockAgainstLeftWall = False
             activeBlockAgainstRightWall = False
             
-            # TODO: Do rotation if we've pressed Space
+            # Do rotation if we've pressed Space
             if rotationActive:
                 pivotX = blocksOnScreen[len(blocksOnScreen) - 1].position.x
                 pivotY = blocksOnScreen[len(blocksOnScreen) - 1].position.y
