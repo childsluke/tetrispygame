@@ -281,7 +281,6 @@ def main():
             nextRandomBlockNumber = random.randint(1,7)
             nextRandomBlock = TetrisBlock(nextRandomBlockNumber)
             nextRandomBlock.downwardVelocity = 0    
-            justUsedHoldBlock = False
             
             for blockInNewTetrisBlock in newTetrisBlock.blocks:
                 blocksOnScreen.append(blockInNewTetrisBlock)
