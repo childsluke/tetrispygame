@@ -1,12 +1,13 @@
 # A TETRIS CLONE UTILIZING PYGAME WRITTEN AS A FIRST 'SIMPLE' GAME PROJECT BY LUKE CHILDS (STARTED 9/5/2019)
 #------------------------------------------------------------------------------------------------------------
 #
-# Left/Right arrows to move block. Down arrows to 'drop' block. Space bar to rotate block.
+# Left/Right arrows to move block. Space bar to rotate block.
 #
 # ESCAPE quits.
 # Movement speed has now been synced via an in-game clock
 #
-# TODO: Line Clearing, bug-fixing
+# TODO: bug-fixing with line clears & collision detection
+#
 # Possible fun bonuses: Main Menu & Game Over screens, Allow player to vary speed & block size, introduce color variation & matching for bonus points
 #                       adjust random block-generation algorithm to have a 'bag' of 7 to choose from, and re-generate when depleted
 
@@ -16,7 +17,8 @@ import pygame
 import random
 
 blockSize = 32
-defaultVelocityFactor = 0.125
+defaultVelocityFactor = 0.25
+defaultVelocityFactor = 0.25
 leftRightMovementFactor = blockSize
 
 class Block:
@@ -26,8 +28,9 @@ class Block:
     boundingRectangle = pygame.Rect(position.x, position.y, blockSize, blockSize)
     
     def moveDown(self, velocityFactorIn):
-        #self.downwardVelocity = velocityFactorIn
-        self.position.y += velocityFactorIn
+        velocityFactorIn += velocityFactorIn % blockSize
+        self.downwardVelocity = velocityFactorIn
+        self.position.y += self.downwardVelocity
         
     def moveLeftorRight(self, amount):
             self.position.x += amount
@@ -41,7 +44,7 @@ class Block:
         return self.boundingRectangle.colliderect(incomingBlock.boundingRectangle)
 
     def updateBlock(self):
-        self.position.y += self.downwardVelocity
+        #self.position.y += self.downwardVelocity
         self.boundingRectangle = pygame.Rect(self.position.x, self.position.y, blockSize, blockSize)
 
 class TetrisBlock:
@@ -167,14 +170,16 @@ def main():
     nextRandomBlockNumber = random.randint(1,7)
     currentRandomBlockNumber = nextRandomBlockNumber
     blocksOnLine = 0
+    blocksOnCurrentLine = 0
     
     spaceAlreadyPressed = False
     leftOrRightPressed = False
-    downAlreadyPressed = False
     
     nextRandomBlock = TetrisBlock(nextRandomBlockNumber)
     nextRandomBlock.downwardVelocity = 0
     rotationActive = False
+    lineToClear = 0
+    lineToTest = 0
     
     score = 0
     gameRunning = True
@@ -221,8 +226,6 @@ def main():
             blockToDraw.updateBlock()
             pygame.draw.rect(gameSurface, blockToDraw.blockColor, blockToDraw.boundingRectangle)
             pygame.draw.rect(gameSurface, (255,255,255), blockToDraw.boundingRectangle, 2)
-            
-            # TODO: Clear line if 15 or more blocks are on it and move any lines above it down
 
             # Check if any blocks are still moving on-screen
             if blockToDraw.downwardVelocity == 0:
@@ -232,12 +235,47 @@ def main():
                 allBlocksStopped = False
             
             blockToDrawIterator += 1
-            if(blockToDrawIterator == len(blocksOnScreen)): blockToDrawIterator = 0                             
-            
+            if(blockToDrawIterator == len(blocksOnScreen)): blockToDrawIterator = 0                              
+        
+        
         # If we have no moving block on screen, we need to make a new, active, moving block for the player to control      
         if allBlocksStopped or len(blocksOnScreen) == 0:
             score += 10
             # See if we've gotten here via a hold event or block dropping - if block dropping, let's re-enable hold usage
+            
+            # TODO: Clear line if 15 or more blocks are on it and move any lines above it down
+            while(lineToTest < 640):
+                blockIterator = 0
+                while(blockIterator < len(blocksOnScreen)):
+                    if blocksOnScreen[blockIterator].position.y >= lineToTest and blocksOnScreen[blockIterator].position.y <= lineToTest + blockSize / 2:
+                        blocksOnCurrentLine += 1
+                    blockIterator += 1
+                if(blocksOnCurrentLine < 15): 
+                    blocksOnCurrentLine = 0 
+                else:
+                    blocksOnCurrentLine = 0
+                    blockIterator = 0 
+                    blocksToDelete = []
+                    while(blockIterator < len(blocksOnScreen)):
+                        # Delete all of the blocks on the full row
+                        if blocksOnScreen[blockIterator].position.y >= lineToTest and blocksOnScreen[blockIterator].position.y <= lineToTest + blockSize / 2:
+                            blocksToDelete.append(blockIterator)
+                        blockIterator += 1
+                    while(not len(blocksToDelete) == 0):
+                        blocksOnScreen.pop(blocksToDelete[(len(blocksToDelete) - 1)])
+                        blocksToDelete.pop() 
+                    
+                    blockIterator = 0
+                    while(blockIterator < len(blocksOnScreen)):
+                        # Move all blocks above down until they reach something
+                        if blocksOnScreen[blockIterator].position.y < lineToTest: 
+                            blocksOnScreen[blockIterator].position.y += blockSize
+                        blockIterator += 1     
+                    #break
+                lineToTest += blockSize / 2
+                
+            
+            lineToTest = 0
             
             newTetrisBlock = TetrisBlock(nextRandomBlockNumber)
             nextRandomBlockNumber = random.randint(1,7)
@@ -273,7 +311,7 @@ def main():
             activeBlockAgainstLeftWall = False
             activeBlockAgainstRightWall = False
             
-            # Do rotation if we've pressed Space
+            # TODO: Do rotation if we've pressed Space
             if rotationActive:
                 pivotX = blocksOnScreen[len(blocksOnScreen) - 1].position.x
                 pivotY = blocksOnScreen[len(blocksOnScreen) - 1].position.y
@@ -297,9 +335,9 @@ def main():
             while(collisionTestCounter < len(blocksOnScreen) - 4):
                 if blocksOnScreen[currentIteration].collisionTest(blocksOnScreen[collisionTestCounter]):
                     collisionApplyCounter = 1
+
                     while collisionApplyCounter <= 4:
                         blocksOnScreen[len(blocksOnScreen) - collisionApplyCounter].downwardVelocity = 0
-                        blocksOnScreen[len(blocksOnScreen) - collisionApplyCounter].position.y -= velocityFactor / 2.0
                         collisionApplyCounter += 1
                     allBlocksStopped = True
                     break
@@ -308,12 +346,7 @@ def main():
             # Game over if last block placed intersects with top of screen
             if blocksOnScreen[len(blocksOnScreen) - 5].position.y <= blockSize:
                 gameRunning = False
-                break
-
-        # Handle keyboard down arrow (increase speed & 'drop' block)
-        if pressed[pygame.K_DOWN] and velocityFactor < 2.5 and not downAlreadyPressed:
-            velocityFactor = 2.5
-            downAlreadyPressed = True       
+                break       
         
         rotationActive = False
         # ESCAPE quits
@@ -348,8 +381,6 @@ def main():
                 if event.type == pygame.KEYUP:
                     if(event.key == pygame.K_SPACE):
                         spaceAlreadyPressed = False
-                    if event.key == pygame.K_DOWN:
-                        downAlreadyPressed = False
                     if(event.key == pygame.K_LEFT) or (event.key == pygame.K_RIGHT):
                         leftOrRightPressed = False
                
